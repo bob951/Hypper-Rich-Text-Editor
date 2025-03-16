@@ -45,6 +45,11 @@
         <br><br>
         <label>Color: <input type="color" id="color"></label>
         <br><br>
+        <label><input type="checkbox" id="gradient"> Enable Gradient</label>
+        <br><br>
+        <label>Gradient Start Color: <input type="color" id="gradientStart" value="#ff0000"></label>
+        <label>Gradient End Color: <input type="color" id="gradientEnd" value="#420000"></label>
+        <br><br>
         <button onclick="copyToClipboard()">Copy</button>
         <div class="preview" id="previewText"></div>
         <p>Generated Code:</p>
@@ -59,19 +64,37 @@
             let isQuad = document.getElementById("quad").checked;
             let size = document.getElementById("size").value;
             let color = document.getElementById("color").value;
+            let enableGradient = document.getElementById("gradient").checked;
+            let startColor = document.getElementById("gradientStart").value;
+            let endColor = document.getElementById("gradientEnd").value;
             
-            let richText = `<color=${color}>`;
+            let richText = `<size=${size}>`;
             if (isBold) richText += "<b>";
             if (isItalic) richText += "<i>";
             if (isQuad) richText += "<quad>";
-            richText += `<size=${size}>${text}</size>`;
+            
+            let coloredText = "";
+            if (enableGradient && text.length > 1) {
+                for (let i = 0; i < text.length; i++) {
+                    let ratio = i / (text.length - 1);
+                    let r = Math.round((1 - ratio) * parseInt(startColor.substr(1, 2), 16) + ratio * parseInt(endColor.substr(1, 2), 16)).toString(16).padStart(2, '0');
+                    let g = Math.round((1 - ratio) * parseInt(startColor.substr(3, 2), 16) + ratio * parseInt(endColor.substr(3, 2), 16)).toString(16).padStart(2, '0');
+                    let b = Math.round((1 - ratio) * parseInt(startColor.substr(5, 2), 16) + ratio * parseInt(endColor.substr(5, 2), 16)).toString(16).padStart(2, '0');
+                    let colorGradient = `#${r}${g}${b}`;
+                    coloredText += `<color=${colorGradient}>${text[i]}</color>`;
+                }
+            } else {
+                coloredText = `<color=${color}>${text}</color>`;
+            }
+            
+            richText += coloredText;
+            
             if (isQuad) richText += "</quad>";
             if (isItalic) richText += "</i>";
             if (isBold) richText += "</b>";
-            richText += "</color>";
-
-            document.getElementById("previewText").innerHTML = text;
-            document.getElementById("previewText").style.color = color;
+            richText += "</size>";
+            
+            document.getElementById("previewText").innerHTML = coloredText;
             document.getElementById("previewText").style.fontSize = size + "px";
             document.getElementById("previewText").style.fontWeight = isBold ? "bold" : "normal";
             document.getElementById("previewText").style.fontStyle = isItalic ? "italic" : "normal";
@@ -84,6 +107,9 @@
         document.getElementById("quad").addEventListener("change", updatePreview);
         document.getElementById("size").addEventListener("input", updatePreview);
         document.getElementById("color").addEventListener("input", updatePreview);
+        document.getElementById("gradient").addEventListener("change", updatePreview);
+        document.getElementById("gradientStart").addEventListener("input", updatePreview);
+        document.getElementById("gradientEnd").addEventListener("input", updatePreview);
 
         function copyToClipboard() {
             let output = document.getElementById("output");
