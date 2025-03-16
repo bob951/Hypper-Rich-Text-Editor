@@ -39,15 +39,11 @@
         <br>
         <label><input type="checkbox" id="bold"> Bold</label>
         <label><input type="checkbox" id="italic"> Italic</label>
-        <label><input type="checkbox" id="underline"> Underline</label>
         <label><input type="checkbox" id="quad"> Quad</label>
         <br><br>
         <label>Font Size: <input type="number" id="size" value="14" min="1" max="100"></label>
         <br><br>
-        <label><input type="checkbox" id="gradient"> Enable Gradient</label>
-        <br><br>
-        <label>Gradient Start Color: <input type="color" id="gradientStart" value="#ff0000"></label>
-        <label>Gradient End Color: <input type="color" id="gradientEnd" value="#420000"></label>
+        <label>Color: <input type="color" id="color"></label>
         <br><br>
         <button onclick="copyToClipboard()">Copy</button>
         <div class="preview" id="previewText"></div>
@@ -60,58 +56,34 @@
             let text = document.getElementById("textInput").value;
             let isBold = document.getElementById("bold").checked;
             let isItalic = document.getElementById("italic").checked;
-            let isUnderline = document.getElementById("underline").checked;
             let isQuad = document.getElementById("quad").checked;
             let size = document.getElementById("size").value;
-            let enableGradient = document.getElementById("gradient").checked;
-            let startColor = document.getElementById("gradientStart").value;
-            let endColor = document.getElementById("gradientEnd").value;
+            let color = document.getElementById("color").value;
             
-            let richText = `<size=${size}>`;
+            let richText = `<color=${color}>`;
             if (isBold) richText += "<b>";
             if (isItalic) richText += "<i>";
-            if (isUnderline) richText += "<u>";
             if (isQuad) richText += "<quad>";
-            
-            let coloredText = "";
-            if (enableGradient) {
-                for (let i = 0; i < text.length; i++) {
-                    let ratio = i / (text.length - 1);
-                    let r = Math.round((1 - ratio) * parseInt(startColor.substr(1, 2), 16) + ratio * parseInt(endColor.substr(1, 2), 16)).toString(16).padStart(2, '0');
-                    let g = Math.round((1 - ratio) * parseInt(startColor.substr(3, 2), 16) + ratio * parseInt(endColor.substr(3, 2), 16)).toString(16).padStart(2, '0');
-                    let b = Math.round((1 - ratio) * parseInt(startColor.substr(5, 2), 16) + ratio * parseInt(endColor.substr(5, 2), 16)).toString(16).padStart(2, '0');
-                    let color = `#${r}${g}${b}`;
-                    coloredText += `<color=${color}>${text[i]}</color>`;
-                }
-            } else {
-                coloredText = text;
-            }
-            
-            richText += coloredText;
-            
+            richText += `<size=${size}>${text}</size>`;
             if (isQuad) richText += "</quad>";
-            if (isUnderline) richText += "</u>";
             if (isItalic) richText += "</i>";
             if (isBold) richText += "</b>";
-            richText += "</size>";
-            
+            richText += "</color>";
+
             document.getElementById("previewText").innerHTML = text;
+            document.getElementById("previewText").style.color = color;
             document.getElementById("previewText").style.fontSize = size + "px";
             document.getElementById("previewText").style.fontWeight = isBold ? "bold" : "normal";
             document.getElementById("previewText").style.fontStyle = isItalic ? "italic" : "normal";
-            document.getElementById("previewText").style.textDecoration = isUnderline ? "underline" : "none";
             document.getElementById("output").value = richText;
         }
 
         document.getElementById("textInput").addEventListener("input", updatePreview);
         document.getElementById("bold").addEventListener("change", updatePreview);
         document.getElementById("italic").addEventListener("change", updatePreview);
-        document.getElementById("underline").addEventListener("change", updatePreview);
         document.getElementById("quad").addEventListener("change", updatePreview);
         document.getElementById("size").addEventListener("input", updatePreview);
-        document.getElementById("gradient").addEventListener("change", updatePreview);
-        document.getElementById("gradientStart").addEventListener("input", updatePreview);
-        document.getElementById("gradientEnd").addEventListener("input", updatePreview);
+        document.getElementById("color").addEventListener("input", updatePreview);
 
         function copyToClipboard() {
             let output = document.getElementById("output");
