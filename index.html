@@ -45,7 +45,6 @@
         <br><br>
         <label>Color: <input type="color" id="color"></label>
         <br><br>
-        <button onclick="updatePreview()">Update Preview</button>
         <button onclick="copyToClipboard()">Copy</button>
         <div class="preview" id="previewText"></div>
         <p>Generated Code:</p>
@@ -78,6 +77,13 @@
             document.getElementById("previewText").style.fontStyle = isItalic ? "italic" : "normal";
             document.getElementById("output").value = richText;
         }
+
+        document.getElementById("textInput").addEventListener("input", updatePreview);
+        document.getElementById("bold").addEventListener("change", updatePreview);
+        document.getElementById("italic").addEventListener("change", updatePreview);
+        document.getElementById("quad").addEventListener("change", updatePreview);
+        document.getElementById("size").addEventListener("input", updatePreview);
+        document.getElementById("color").addEventListener("input", updatePreview);
 
         function copyToClipboard() {
             let output = document.getElementById("output");
