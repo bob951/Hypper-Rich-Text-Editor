@@ -29,6 +29,13 @@
             border: 1px solid #ccc;
             background: #f9f9f9;
             min-height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .char {
+            display: inline-block;
         }
     </style>
 </head>
@@ -74,6 +81,7 @@
             if (isQuad) richText += "<quad>";
             
             let coloredText = "";
+            let previewHTML = "";
             if (enableGradient && text.length > 1) {
                 for (let i = 0; i < text.length; i++) {
                     let ratio = i / (text.length - 1);
@@ -82,9 +90,11 @@
                     let b = Math.round((1 - ratio) * parseInt(startColor.substr(5, 2), 16) + ratio * parseInt(endColor.substr(5, 2), 16)).toString(16).padStart(2, '0');
                     let colorGradient = `#${r}${g}${b}`;
                     coloredText += `<color=${colorGradient}>${text[i]}</color>`;
+                    previewHTML += `<span class="char" style="color: ${colorGradient}; font-size: ${size}px; font-weight: ${isBold ? "bold" : "normal"}; font-style: ${isItalic ? "italic" : "normal"};">${text[i]}</span>`;
                 }
             } else {
                 coloredText = `<color=${color}>${text}</color>`;
+                previewHTML = `<span style="color: ${color}; font-size: ${size}px; font-weight: ${isBold ? "bold" : "normal"}; font-style: ${isItalic ? "italic" : "normal"};">${text}</span>`;
             }
             
             richText += coloredText;
@@ -94,22 +104,11 @@
             if (isBold) richText += "</b>";
             richText += "</size>";
             
-            document.getElementById("previewText").innerHTML = coloredText;
-            document.getElementById("previewText").style.fontSize = size + "px";
-            document.getElementById("previewText").style.fontWeight = isBold ? "bold" : "normal";
-            document.getElementById("previewText").style.fontStyle = isItalic ? "italic" : "normal";
+            document.getElementById("previewText").innerHTML = previewHTML;
             document.getElementById("output").value = richText;
         }
 
-        document.getElementById("textInput").addEventListener("input", updatePreview);
-        document.getElementById("bold").addEventListener("change", updatePreview);
-        document.getElementById("italic").addEventListener("change", updatePreview);
-        document.getElementById("quad").addEventListener("change", updatePreview);
-        document.getElementById("size").addEventListener("input", updatePreview);
-        document.getElementById("color").addEventListener("input", updatePreview);
-        document.getElementById("gradient").addEventListener("change", updatePreview);
-        document.getElementById("gradientStart").addEventListener("input", updatePreview);
-        document.getElementById("gradientEnd").addEventListener("input", updatePreview);
+        document.querySelectorAll("input, textarea").forEach(el => el.addEventListener("input", updatePreview));
 
         function copyToClipboard() {
             let output = document.getElementById("output");
